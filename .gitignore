@@ -39,6 +39,10 @@
 # CMake
 cmake-build-*/
 
+godot-cpp/
+build/
+export/
+
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
 

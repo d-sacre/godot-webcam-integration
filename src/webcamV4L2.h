@@ -56,6 +56,8 @@ public:
     return false;
   }
 
+  static godot::Array find_sources();
+
   void open(Webcam::Settings settings) override;
 
   void close() override {

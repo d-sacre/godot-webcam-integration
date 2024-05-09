@@ -15,13 +15,17 @@
 #include <linux/videodev2.h>
 #include <optional>
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
+#include <string>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <turbojpeg.h>
 #include <unistd.h>
 
 #include "ujpeg.h"
+
+#include "list_devices.hpp"
 
 #ifdef TURBOJPG_FOUND
 
@@ -37,6 +41,38 @@ static int xioctl(int fd, int request, void *arg) {
         r = ioctl(fd, request, arg);
     while (-1 == r && EINTR == errno);
     return r;
+}
+
+Array WebcamV4L2::find_sources(){
+    Array sources{};
+    std::vector<v4l2::devices::DEVICE_INFO> devices;
+
+    // DESCRIPTION: Find all relevant devices
+    v4l2::devices::list(devices);
+
+    for (const auto & device : devices) 
+    {
+    
+        // DESCRIPTION: Create the paths array, assemble the dictionary 
+        // and push it at the end of the sources array
+
+        Array paths; 
+
+        // DESCRIPTION: Iterate over all device paths and add them to export array
+        for (const auto & path : device.device_paths) {
+            paths.push_back(String(path.c_str()));
+        }
+
+        Dictionary deviceEntry = Dictionary::make(
+            "description", String(device.device_description.c_str()),
+            "bus", String(device.bus_info.c_str()),
+            "paths", paths
+        );
+        sources.push_back(deviceEntry);
+    }
+
+    return sources;
+    
 }
 
 void WebcamV4L2::open(Webcam::Settings s) {
@@ -58,7 +94,7 @@ void WebcamV4L2::open(Webcam::Settings s) {
 
         auto dev = settings.dev;
 
-        // if device is empty or auto , try to autodetect
+        // if device is empty or auto, try to autodetect and pick the first available device
         if (dev == "auto" || dev.empty()) {
             for (int i = 0; i < 64; i++) {
                 String path = "/dev/video" + String::num_int64(i);
@@ -69,6 +105,7 @@ void WebcamV4L2::open(Webcam::Settings s) {
             }
         }
 
+        // DESCRIPTION: If no device could be autodetected, throw an error and try again
         if (dev == "auto") {
             Godot::print_error("Could not detect a camera", __FUNCTION__, __FILE__,
                                __LINE__);

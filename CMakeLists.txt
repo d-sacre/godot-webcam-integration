@@ -4,6 +4,7 @@ project(godot_webcam)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake-modules)
 set(CMAKE_CXX_STANDARD 17)
 
+# REMARK: Comment out if another, already compiled instance of godot-cpp should be used
 add_subdirectory(godot-cpp)
 
 add_library(${PROJECT_NAME} SHARED src/init.cpp src/init.cpp src/webcam.cpp src/webcam.h src/webcamV4L2.cpp src/webcamV4L2.h src/ujpeg.cpp src/ujpeg.h)

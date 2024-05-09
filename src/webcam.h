@@ -87,6 +87,8 @@ public:
         register_method("get_image", &Webcam::getImage);
         register_method("has_image", &Webcam::hasImage);
 
+        register_method("find_sources", &Webcam::find_sources);
+
 
     }
 
@@ -103,6 +105,8 @@ public:
     void _process(float dt);
 
     void _notification(int what);
+
+    godot::Array find_sources();
 
     void start();
 

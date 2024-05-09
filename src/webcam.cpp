@@ -36,6 +36,7 @@ void Webcam::_process(float dt) {
     if (impl->process(dt)) {
         if (autoTexture) {
             if (impl->image.is_valid() && !impl->image->is_empty()) {
+               
 
                 Ref<Image> img;
                 if (rotation == 1 || rotation == 2) {
@@ -98,6 +99,10 @@ void Webcam::_process(float dt) {
             }
         }
     }
+}
+
+godot::Array Webcam::find_sources(){
+    return WebcamV4L2::find_sources();
 }
 
 void Webcam::start() {
